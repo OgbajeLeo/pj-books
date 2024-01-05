@@ -107,7 +107,10 @@ const Header = () => {
           <Link to="#" className="text-white py-2">Home</Link>
           <Link to="#" className="text-white py-2">Books</Link>
           <Link to="#" className="text-white py-2">About</Link>
-          {/* Add more links as needed */}
+          <button className="bg-brown1 hover:bg-brown2 px-4 py-2 rounded">
+            <Link to='/login' className='text-white'>Login</Link>
+          </button>
+          
         </div>
       </div>
     </nav>

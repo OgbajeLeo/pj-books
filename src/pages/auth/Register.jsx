@@ -1,13 +1,103 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    fName: '',
+    lName: '',
+    email: '',
+    status: 'Author',
+    dob: '',
+    password: '',
+    cPassword: '',
+    isTerms: false,
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    // Clear validation error for the field when user starts typing
+    setErrors({
+      ...errors,
+      [e.target.name]: '',
+    });
+  };
+
+  const handleCheckboxChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.checked,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const validationErrors = {};
+
+    if (!formData.fName.trim()) {
+      validationErrors.fName = 'First Name is required';
+    }
+
+    if (!formData.lName.trim()) {
+      validationErrors.lName = 'Last Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      validationErrors.email = 'Email is required';
+    } else if (!isValidEmail(formData.email)) {
+      validationErrors.email = 'Invalid email format';
+    }
+
+    if (!formData.dob.trim()) {
+      validationErrors.dob = 'Date of Birth is required';
+    }
+
+    if (!formData.password.trim()) {
+      validationErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      validationErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (formData.password !== formData.cPassword) {
+      validationErrors.cPassword = 'Passwords do not match';
+    }
+
+    if (Object.keys(validationErrors).length === 0) {
+      // API call can come in
+      
+      console.log('Registration successful!', JSON.stringify(formData));
+      // Reset form data
+      setFormData({
+        fName: '',
+        lName: '',
+        email: '',
+        status: 'Author',
+        dob: '',
+        password: '',
+        cPassword: '',
+        isTerms: false,
+      });
+    } else {
+      // Update state with validation errors
+      setErrors(validationErrors);
+    }
+  };
+
+  const isValidEmail = (email) => {
+    // Simple email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   return (
     <main className="flex flex-col lg:flex-row lg:w-full h-auto">
       {/* Left Column (Image)*/}
-      
       <div className="sm:px-20 lg:w-[50%] h-full mb-10 flex flex-col px-8 lg:flex-1">
-        
         {/* Header Section */}
         <div className="mb-4">
           <h1 className="font-bold text-center mt-6 mb-2 text-2xl lg:text-4xl">
@@ -16,136 +106,197 @@ const Register = () => {
         </div>
 
         <div>
-          <form className='space-y-4 py-2 px-4 shadow sm:rounded-lg sm:px-10'>
-          <div>
-        <label htmlFor="fName" className="block text-sm font-bold text-gray-700">
-         First Name
-        </label>
-        <div className="mt-1">
-          <input
-            id="fName"
-            name="fName"
-            type="text"
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          />    
-        </div>
-        </div>
+          <form className="space-y-4 py-2 px-4 shadow sm:rounded-lg sm:px-10" onSubmit={handleSubmit}>
+            {/* First Name */}
+            <div>
+              <label htmlFor="fName" className="block text-sm font-bold text-gray-700">
+                First Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="fName"
+                  name="fName"
+                  type="text"
+                  value={formData.fName}
+                  onChange={handleChange}
+                  className={`appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
+                    placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+                      errors.fName ? 'border-red-500' : ''
+                    }`}
+                />
+                {errors.fName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.fName}</p>
+                )}
+              </div>
+            </div>
 
-        <div>
-        <label htmlFor="lName" className="block text-sm font-bold text-gray-700">
-         Last Name
-        </label>
-        <div className="mt-1">
-          <input
-            id="lName"
-            name="lName"
-            type="text"
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          />    
-        </div>
-      </div>
+            {/* Last Name */}
+            <div>
+              <label htmlFor="lName" className="block text-sm font-bold text-gray-700">
+                Last Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="lName"
+                  name="lName"
+                  type="text"
+                  value={formData.lName}
+                  onChange={handleChange}
+                  className={`appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
+                    placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+                      errors.lName ? 'border-red-500' : ''
+                    }`}
+                />
+                {errors.lName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.lName}</p>
+                )}
+              </div>
+            </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-bold text-gray-700">
-         Email
-        </label>
-        <div className="mt-1">
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          />    
-        </div>
-      </div>
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-bold text-gray-700">
+                Email
+              </label>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
+                    placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+                      errors.email ? 'border-red-500' : ''
+                    }`}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
+            </div>
 
-      <div className="flex items-center justify-between">
-        <div>
-      <label htmlFor="status" className="ml-2 block text-sm font-bold text-gray-900">
-          Status
-          </label>
-        <div className="flex items-center">
-          <select className='border rounded-md border-gray-900 py-2 px-4 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"'>
-            <option value={"Author"}>Author</option>
-            <option value={"Reader"}>Reader</option>
-          </select>
-        </div>
-        </div>
+            {/* Status */}
+            <div className='flex items-center justify-between '>
+            <div>
+              <label htmlFor="status" className="block text-sm font-bold text-gray-700">
+                Status
+              </label>
+              <div className="mt-1">
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className={`border rounded-md border-gray-900 py-2 px-4 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+                    errors.status ? 'border-red-500' : ''
+                  }`}
+                >
+                  <option value="Author">Author</option>
+                  <option value="Reader">Reader</option>
+                </select>
+                {errors.status && (
+                  <p className="text-red-500 text-sm mt-1">{errors.status}</p>
+                )}
+              </div>
+            </div>
 
-        <div className="text-sm">
-        <label htmlFor="dob" className="ml-2 block text-sm font-bold text-gray-900">
-          Date of Birth
-          </label>
-        <div className="flex items-center">
-        <input
-            id="dob"
-            name="dob"
-            type="date"
-            className="appearance-none rounded-md relative block w-full px-4 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          /> 
-        </div>
-        </div>
-      </div>
+             {/* Date of Birth */}
+            <div>
+              <label htmlFor="dob" className="block text-sm font-bold text-gray-700">
+                Date of Birth
+              </label>
+              <div className="mt-1">
+                <input
+                  id="dob"
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  className={`appearance-none rounded-md relative block w-full px-4 py-2 border border-gray-900
+                    placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+                      errors.dob ? 'border-red-500' : ''
+                    }`}
+                />
+                {errors.dob && (
+                  <p className="text-red-500 text-sm mt-1">{errors.dob}</p>
+                )}
+              </div>
+            </div>
+            </div>
+
+            {/* Password */}
+<div>
+  <label htmlFor="password" className="block text-sm font-bold text-gray-700">
+    Password
+  </label>
+  <div className="mt-1">
+    <input
+      id="password"
+      name="password"
+      type="password"
+      value={formData.password}
+      onChange={handleChange}
+      className={`appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
+        placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+          errors.password ? 'border-red-500' : ''
+        }`}
+    />
+    {errors.password && (
+      <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+    )}
+  </div>
+</div>
+
+{/* Confirm Password */}
+<div>
+  <label htmlFor="cPassword" className="block text-sm font-bold text-gray-700">
+    Confirm Password
+  </label>
+  <div className="mt-1">
+    <input
+      id="cPassword"
+      name="cPassword"
+      type="password"
+      value={formData.cPassword}
+      onChange={handleChange}
+      className={`appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
+        placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm ${
+          errors.cPassword ? 'border-red-500' : ''
+        }`}
+    />
+    {errors.cPassword && (
+      <p className="text-red-500 text-sm mt-1">{errors.cPassword}</p>
+    )}
+  </div>
+</div>
+
+{/* Checkbox for terms and conditions */}
+<div className="flex items-center">
+  <input
+    id="terms"
+    name="terms"
+    type="checkbox"
+    checked={formData.isTerms}
+    onChange={handleCheckboxChange}
+    className="h-4 w-4 text-indigo-600 focus:ring-[#6C4C35] border-gray-300 rounded"
+  />
+  <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
+    I have read the terms and conditions.
+  </label>
+</div>
 
 
-
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-bold text-gray-700">
-         Password
-        </label>
-        <div className="mt-1">
-          <input
-            id="password"
-            name="password"
-            type="password"
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          />    
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="cPassword" className="block text-sm font-bold text-gray-700">
-         Confirm Password
-        </label>
-        <div className="mt-1">
-          <input
-            id="cPassword"
-            name="cPassword"
-            type="password"
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-900
-            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#6C4C35] focus:border-[#6C4C35] focus:z-10 sm:text-sm"
-          />    
-        </div>
-      </div>
-
-      <div className="flex items-center">
-          <input
-            id="remember_me"
-            name="rememberMe"
-            type="checkbox"
-            className="h-4 w-4 text-indigo-600 focus:ring-[#6C4C35] border-gray-300 rounded"
-          />
-          <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
-          I have read the terms and condition.
-          </label>
-        </div>
-
-        <div className='mt-8'>
-        <button
-          type="submit"
-          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#6C4C35] hover:bg-[#23170f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6C4C35]"
-        >
-          Register
-        </button>
-      </div>
-
-      <div class="mt-6">
+            {/* Register button */}
+            <div className="mt-8">
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#6C4C35] hover:bg-[#23170f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6C4C35]"
+              >
+                Register
+              </button>
+            </div>
+            <div class="mt-6">
 
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
@@ -194,7 +345,7 @@ const Register = () => {
 
     
     </main>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
